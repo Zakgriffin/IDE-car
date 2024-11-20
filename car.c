@@ -40,7 +40,7 @@ void tick_capture_mode(void) {
 	} else {
 		if(!left_pressed && !right_pressed) captured = false;
 		
-		double nudge = 0.0000001;
+		double nudge = 0.001;
 		if(left_pressed) {
 			set_servo_angle(&steer_servo, clamp_within(steer_servo.duty_cycle + nudge, STEER_SERVO_LEFT_DUTY, STEER_SERVO_RIGHT_DUTY));
 		}
@@ -75,14 +75,14 @@ void tick_drive_mode(void) {
 	double turning_gain = clamp_within(1-double_abs(turning), 0, 1);
 	double speed = map_range(turning_gain, 0, 1, MIN_DRIVE_DUTY, MAX_DRIVE_DUTY);
 	
-	if(average_bright < 4000) {
+	if(average_bright < 3000) {
 		ticks_seen_carpet++;
 	} else {
 		ticks_seen_carpet = 0;
 	}
 	
 	if(ticks_seen_carpet > 1000) {
-		//stop_moving = true;
+		stop_moving = true;
 	}
 	
 	if(stop_moving) {
@@ -108,16 +108,18 @@ int main(void) {
 		
 		if(check_button_pressed(&left_button) && check_button_pressed(&right_button)) holding++;
 		else holding = 0;
-		print("holding: %d\r\n", holding);
 		if(holding > 10) {
 			drive_mode = !drive_mode;
 			holding = 0;
 		}
+		tick_drive_mode();
 		
+		/*
 		if(drive_mode) {
 			tick_drive_mode();
 		} else {
 			tick_capture_mode();
 		}
+		*/
 	}
 }
