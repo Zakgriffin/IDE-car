@@ -5,8 +5,8 @@
 #include "common.h"
 #include "pwm.h"
 
-#define MIN_DRIVE_DUTY (0.25)
-#define MAX_DRIVE_DUTY (0.35)
+#define MIN_DRIVE_DUTY (0.2)
+#define MAX_DRIVE_DUTY (0.25)
 
 #define DRIVE_MOTORS_TIMER (TIMER_A0)
 

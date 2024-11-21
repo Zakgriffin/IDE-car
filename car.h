@@ -7,5 +7,6 @@
 #include "steer_servo.h"
 #include "uart_serial.h"
 #include "button.h"
+#include "bluetooth.h"
 
 #endif

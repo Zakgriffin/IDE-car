@@ -24,17 +24,29 @@ int slow_down_counter = 10000;
 
 bool captured = false;
 void tick_capture_mode(void) {
+	if(dataAvailable_bluetooth()){
+			char character = getchar_bluetooth();
+			if(character == 'g'){
+				set_both_drive_motor_speed(0.2);
+			}
+			else if(character == 's'){
+				set_both_drive_motor_speed(0);
+			}
+	 }
+	
+	
 	bool left_pressed = check_button_pressed(&left_button);
 	bool right_pressed = check_button_pressed(&right_button);
 	
 	plot_line_data(camera_data);
 	
 	if(!captured && left_pressed && right_pressed) {
-		print("[");
+		print_bluetooth("servo: %f\r\n", steer_servo.duty_cycle);
+		print_bluetooth("camera: [");
 		for(int i = 0 ; i < 128; i++) {
-			print("%d, ", camera_data[i]);
+			print_bluetooth("%d, ", camera_data[i]);
 		}
-		print("]\r\n\r\n");
+		print_bluetooth("]\r\n\r\n");
 		
 		captured = true;
 	} else {
@@ -99,21 +111,20 @@ int main(void) {
 	init_OLED_display();
 	init_drive_motors();
 	init_buttons();
-	
+	init_bluetooth();
+		
+	int holding = 0;
 	bool drive_mode = false;
 	
-	int holding = 0;
-	
+	set_both_drive_motor_speed(0); //was 0.2
 	while(1) {
-		
 		if(check_button_pressed(&left_button) && check_button_pressed(&right_button)) holding++;
 		else holding = 0;
 		if(holding > 10) {
 			drive_mode = !drive_mode;
 			holding = 0;
 		}
-		tick_drive_mode();
-		
+tick_drive_mode();
 		/*
 		if(drive_mode) {
 			tick_drive_mode();
