@@ -65,6 +65,14 @@ void tick_capture_mode(void) {
 
 int ticks_seen_carpet = 0;
 bool stop_moving = false;
+
+double integral = 0;
+
+double Kp = 15;
+double Ki = 0;
+double Kd = -3;
+double last_error = 0;
+
 void tick_drive_mode(void) {
 	int mass_sum = 0;
 	int weight_mass_sum = 0;
@@ -74,12 +82,24 @@ void tick_drive_mode(void) {
 		mass_sum += camera_data[i];
 		bright_sum += camera_data[i];
 	}
-	double center_of_mass = (double) weight_mass_sum / mass_sum;
+	double center_of_mass = (double) weight_mass_sum / mass_sum + 3;
+	
+	double error = center_of_mass - 64;
+	integral += error;
+	
+	double rolling_center = Kp * error + Ki * integral + Kd * (error - last_error);
+	rolling_center = clamp_within(rolling_center, -64, 64);
+	/*
+	print("rolling_center: %f\r\n", rolling_center);
+	print("error: %f\r\n", error);
+	print("last_error: %f\r\n", last_error);
+	print("integral: %f\r\n", integral);
+	*/
 	double average_bright = bright_sum / 128.0;
 	
 	double center_expected_limit = 50;
 	
-	double turning = map_range(center_of_mass, center_expected_limit, 127 - center_expected_limit, -1, 1);
+	double turning = map_range(rolling_center, -64, 64, -1, 1);
 	double duty_cycle = map_range(turning, -1, 1, STEER_SERVO_RIGHT_DUTY, STEER_SERVO_LEFT_DUTY);
 	duty_cycle = clamp_within(duty_cycle, STEER_SERVO_LEFT_DUTY, STEER_SERVO_RIGHT_DUTY);
 	set_servo_angle(&steer_servo, duty_cycle);
@@ -102,6 +122,8 @@ void tick_drive_mode(void) {
 	} else {
 		set_both_drive_motor_speed(speed);
 	}
+	
+	last_error = error;
 }
 
 int main(void) {
@@ -112,25 +134,8 @@ int main(void) {
 	init_drive_motors();
 	init_buttons();
 	init_bluetooth();
-		
-	int holding = 0;
-	bool drive_mode = false;
 	
-	set_both_drive_motor_speed(0); //was 0.2
 	while(1) {
-		if(check_button_pressed(&left_button) && check_button_pressed(&right_button)) holding++;
-		else holding = 0;
-		if(holding > 10) {
-			drive_mode = !drive_mode;
-			holding = 0;
-		}
-tick_drive_mode();
-		/*
-		if(drive_mode) {
-			tick_drive_mode();
-		} else {
-			tick_capture_mode();
-		}
-		*/
+		tick_drive_mode();
 	}
 }

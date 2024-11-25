@@ -15,7 +15,7 @@
 #define CLK_PORT (P5)
 #define CLK_PIN (BIT4)
 
-#define INTEGRATION_SECS (0.004f)
+#define INTEGRATION_SECS (0.0075f)
 // was 0.0075f
 // sampled with 0.004
 

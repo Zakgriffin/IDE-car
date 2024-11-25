@@ -3,7 +3,7 @@
 PWM_Device left_motor_forward, left_motor_backward, right_motor_forward, right_motor_backward;
 
 void init_DC_motor(PWM_Device* motor_forward, PWM_Device* motor_backward, Port* enable_port, int enable_pin) {
-	enable_port->SEL0 &= enable_pin;
+	enable_port->SEL0 &= ~enable_pin;
 	enable_port->SEL1 &= ~enable_pin;
 	enable_port->DIR |= enable_pin;
 	enable_port->OUT &= ~enable_pin;
