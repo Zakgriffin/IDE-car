@@ -5,8 +5,8 @@ bool stop_moving = false;
 
 #define SAMPLE_COUNT (5)
 
-double dead_zone = 2.0;
-double high_thresh = 7.8;
+double dead_zone = 1.4;
+double high_thresh = 6.8;
 double abrupt_turn = 0.015;
 double bias = 6;
 
@@ -55,7 +55,7 @@ void tick_drive_mode(void) {
 			set_both_drive_motor_speed(0);
 		} else {
 			double speed = map_range(double_abs(error), 0, 32, 0.3, 0.2);
-			set_both_drive_motor_speed(0.29); // 0.26
+			set_both_drive_motor_speed(0.25); // 0.26
 		}	
 }
 
@@ -121,6 +121,6 @@ int main(void) {
 		//tick_bluetooth();
 		tick_drive_mode();
 		
-		plot_line_data(camera_data);
+		//plot_line_data(camera_data);
 	}
 }
