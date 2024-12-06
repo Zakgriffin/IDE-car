@@ -15,11 +15,14 @@
 #define CLK_PORT (P5)
 #define CLK_PIN (BIT4)
 
+#define PIXEL_COUNT (128)
+#define CENTER_PIXEL (PIXEL_COUNT / 2)
+
 #define INTEGRATION_SECS (0.0075f)
 // was 0.0075f
 // sampled with 0.004
 
-extern uint16_t camera_data[128];
+extern uint16_t camera_data[PIXEL_COUNT];
 
 void init_camera(void);
 

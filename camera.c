@@ -1,6 +1,6 @@
 #include "camera.h"
 
-uint16_t camera_data[128];
+uint16_t camera_data[PIXEL_COUNT];
 long pixel_counter = 0;
 bool pixel_was_collected = false;
 
@@ -34,7 +34,7 @@ void CLK_handler(void) {
     uint16_t pixel = read_adc_blocking();
     camera_data[pixel_counter] = pixel;
     pixel_counter++;
-    if (pixel_counter == 128) {
+    if (pixel_counter == PIXEL_COUNT) {
       pixel_was_collected = true;
       // stop the clock until the next SI pulse
       disable_sys_tick_timer();
