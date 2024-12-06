@@ -8,7 +8,7 @@ bool stop_moving = false;
 double dead_zone = 2.0;
 double high_thresh = 7.8;
 double abrupt_turn = 0.015;
-double bias = 0.9;
+double bias = 6;
 
 int carpet_stop_thresh = 3000;
 
@@ -24,7 +24,7 @@ void tick_drive_mode(void) {
 		
 		double weighted_center = weighted_brightness_sum / brightness_sum + bias;
 		double error = weighted_center - CENTER_PIXEL;
-		
+	
 		double q = servo_angle_duty_cycle - STEER_SERVO_CENTER_DUTY;
 		if(error > dead_zone) {
 			double r = STEER_SERVO_RIGHT_DUTY;
@@ -37,7 +37,7 @@ void tick_drive_mode(void) {
 		} else {
 			servo_angle_duty_cycle = STEER_SERVO_CENTER_DUTY;
 		}
-		
+	
 		servo_angle_duty_cycle = clamp_within(servo_angle_duty_cycle, STEER_SERVO_RIGHT_DUTY, STEER_SERVO_LEFT_DUTY);
 
 		set_servo_angle(&steer_servo, servo_angle_duty_cycle);
@@ -55,9 +55,10 @@ void tick_drive_mode(void) {
 			set_both_drive_motor_speed(0);
 		} else {
 			double speed = map_range(double_abs(error), 0, 32, 0.3, 0.2);
-			set_both_drive_motor_speed(0.26); // 0.26
-		}
+			set_both_drive_motor_speed(0.29); // 0.26
+		}	
 }
+
 
 char bluetooth_str_buffer[64];
 int bluetooth_str_index = 0;
@@ -119,5 +120,7 @@ int main(void) {
 	while(1) {
 		//tick_bluetooth();
 		tick_drive_mode();
+		
+		plot_line_data(camera_data);
 	}
 }
